@@ -1,0 +1,23 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# Troque o eixo em VALUES para bc:MundoDigital ou bc:CulturaDigital.
+SELECT DISTINCT ?eixo ?item ?codigo ?objetoConhecimento ?processo ?texto
+WHERE {
+  VALUES ?eixo { bc:PensamentoComputacional }
+
+  ?item bc:associadoAEixo ?eixo ;
+        bc:codigoBNCC ?codigo .
+  OPTIONAL { ?item bc:temObjetoConhecimento ?objetoConhecimento }
+  OPTIONAL { ?item bc:mobilizaProcesso ?processo }
+  OPTIONAL { ?item bc:textoNormativo ?texto }
+
+  BIND(
+    IF(STRSTARTS(STR(?codigo), "EI"), 0,
+      IF(STRSTARTS(STR(?codigo), "EF"), xsd:integer(SUBSTR(STR(?codigo), 3, 2)),
+        IF(STRSTARTS(STR(?codigo), "EM"), 100, 999)
+      )
+    ) AS ?ord
+  )
+}
+ORDER BY ?ord ?codigo

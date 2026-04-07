@@ -1,0 +1,30 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# Exemplo: conceitos esperados no 8º ano que ainda não aparecem cobertos pelo plano.
+SELECT DISTINCT ?plano ?ano ?conceito ?labelConceito
+WHERE {
+  VALUES (?plano ?ano) { (bc:PlanoExemploSegurancaEF8 bc:Ano8EF) }
+
+  {
+    SELECT DISTINCT ?conceito
+    WHERE {
+      ?item a bc:HabilidadeFundamental ;
+            bc:dirigidoA ?ano .
+      {
+        ?item bc:abordaConceito ?conceito .
+      }
+      UNION
+      {
+        ?item bc:temObjetoConhecimento/bc:representaConceito ?conceito .
+      }
+    }
+  }
+
+  OPTIONAL { ?conceito rdfs:label ?labelConceito }
+
+  FILTER NOT EXISTS {
+    ?plano bc:cobreConceito/(bc:temSubconceito*) ?conceito .
+  }
+}
+ORDER BY ?labelConceito ?conceito

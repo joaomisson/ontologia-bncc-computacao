@@ -1,0 +1,36 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+
+# Parâmetros:
+#   VALUES ?planoSel { bc:PlanoExemploSegurancaEF8 }
+SELECT ?planoSel ?ano ?eixo
+       (COUNT(DISTINCT ?itemEsperado) AS ?qtdEsperada)
+       (COUNT(DISTINCT ?itemCoberto) AS ?qtdImplementada)
+       (COUNT(DISTINCT ?conceitoCoberto) AS ?qtdConceitosCobertos)
+WHERE {
+  VALUES ?planoSel { bc:PlanoExemploSegurancaEF8 }
+
+  ?itemEsperado a bc:HabilidadeFundamental ;
+                bc:dirigidoA ?ano ;
+                bc:associadoAEixo ?eixo .
+
+  OPTIONAL {
+    ?planoSel bc:implementaItem ?itemCoberto .
+    ?itemCoberto bc:dirigidoA ?ano ;
+                bc:associadoAEixo ?eixo .
+  }
+
+  OPTIONAL {
+    ?planoSel bc:implementaItem ?itemConceito .
+    ?itemConceito bc:dirigidoA ?ano ;
+                  bc:associadoAEixo ?eixo .
+    {
+      ?itemConceito bc:abordaConceito ?conceitoCoberto .
+    }
+    UNION
+    {
+      ?itemConceito bc:temObjetoConhecimento/bc:representaConceito ?conceitoCoberto .
+    }
+  }
+}
+GROUP BY ?planoSel ?ano ?eixo
+ORDER BY ?ano ?eixo

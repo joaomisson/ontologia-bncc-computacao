@@ -1,0 +1,17 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+
+# Parâmetros:
+#   VALUES (?planoSel ?anoSel ?eixoSel) { (bc:PlanoExemploSegurancaEF8 bc:Ano8EF bc:CulturaDigital) }
+SELECT DISTINCT ?planoSel ?anoSel ?eixoSel ?item ?codigo ?texto
+WHERE {
+  VALUES (?planoSel ?anoSel ?eixoSel) { (bc:PlanoExemploSegurancaEF8 bc:Ano8EF bc:CulturaDigital) }
+
+  ?item a bc:HabilidadeFundamental ;
+        bc:dirigidoA ?anoSel ;
+        bc:codigoBNCC ?codigo ;
+        bc:textoNormativo ?texto .
+
+  FILTER(!BOUND(?eixoSel) || EXISTS { ?item bc:associadoAEixo ?eixoSel })
+  FILTER NOT EXISTS { ?planoSel bc:implementaItem ?item }
+}
+ORDER BY ?codigo
