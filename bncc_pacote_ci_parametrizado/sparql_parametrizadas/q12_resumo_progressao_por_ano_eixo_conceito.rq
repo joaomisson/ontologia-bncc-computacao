@@ -1,0 +1,39 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# Parâmetros:
+#   VALUES (?anoSel ?eixoSel ?conceitoSel) { (UNDEF bc:PensamentoComputacional bc:Algoritmo) }
+SELECT ?ano ?eixo ?conceitoFiltrado
+       (COUNT(DISTINCT ?item) AS ?qtdItens)
+       (GROUP_CONCAT(DISTINCT ?codigo; separator=", ") AS ?codigos)
+WHERE {
+  VALUES (?anoSel ?eixoSel ?conceitoSel) { (UNDEF bc:PensamentoComputacional bc:Algoritmo) }
+
+  ?item bc:codigoBNCC ?codigo .
+  OPTIONAL { ?item bc:dirigidoA ?ano }
+  OPTIONAL { ?item bc:associadoAEixo ?eixo }
+
+  FILTER(!BOUND(?anoSel) || EXISTS { ?item bc:dirigidoA ?anoSel })
+  FILTER(!BOUND(?eixoSel) || EXISTS { ?item bc:associadoAEixo ?eixoSel })
+
+  {
+    ?item bc:abordaConceito ?conceitoFiltrado .
+  }
+  UNION
+  {
+    ?item bc:temObjetoConhecimento/bc:representaConceito ?conceitoFiltrado .
+  }
+
+  FILTER(!BOUND(?conceitoSel) || ?conceitoFiltrado = ?conceitoSel || EXISTS { ?conceitoFiltrado bc:temSubconceito* ?conceitoSel })
+}
+GROUP BY ?ano ?eixo ?conceitoFiltrado
+ORDER BY
+  (IF(BOUND(?codigo),
+      IF(STRSTARTS(STR(?codigo), "EI"), 0,
+        IF(STRSTARTS(STR(?codigo), "EF"), xsd:integer(SUBSTR(STR(?codigo), 3, 2)),
+          IF(STRSTARTS(STR(?codigo), "EM"), 100, 999)
+        )
+      ),
+      999
+   ))
+  ?ano ?eixo ?conceitoFiltrado

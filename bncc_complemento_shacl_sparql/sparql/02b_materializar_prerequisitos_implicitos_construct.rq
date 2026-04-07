@@ -1,0 +1,47 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?item bc:temPrerequisitoImplicito ?prerequisito .
+}
+WHERE {
+  ?item bc:codigoBNCC ?codigo .
+  {
+    ?item bc:abordaConceito ?conceitoAlvo .
+  }
+  UNION
+  {
+    ?item bc:temObjetoConhecimento/bc:representaConceito ?conceitoAlvo .
+  }
+
+  ?conceitoAlvo bc:requerConceito+ ?conceitoBase .
+
+  ?prerequisito bc:codigoBNCC ?codigoPrerequisito .
+  {
+    ?prerequisito bc:abordaConceito ?conceitoBase .
+  }
+  UNION
+  {
+    ?prerequisito bc:temObjetoConhecimento/bc:representaConceito ?conceitoBase .
+  }
+
+  FILTER(?item != ?prerequisito)
+
+  BIND(
+    IF(STRSTARTS(STR(?codigo), "EI"), 0,
+      IF(STRSTARTS(STR(?codigo), "EF"), xsd:integer(SUBSTR(STR(?codigo), 3, 2)),
+        IF(STRSTARTS(STR(?codigo), "EM"), 100, 999)
+      )
+    ) AS ?ordItem
+  )
+  BIND(
+    IF(STRSTARTS(STR(?codigoPrerequisito), "EI"), 0,
+      IF(STRSTARTS(STR(?codigoPrerequisito), "EF"), xsd:integer(SUBSTR(STR(?codigoPrerequisito), 3, 2)),
+        IF(STRSTARTS(STR(?codigoPrerequisito), "EM"), 100, 999)
+      )
+    ) AS ?ordPre
+  )
+
+  FILTER(?ordPre < ?ordItem || EXISTS { ?prerequisito bc:precedeCurricularmente+ ?item })
+  FILTER NOT EXISTS { ?item bc:temPrerequisitoImplicito ?prerequisito }
+}

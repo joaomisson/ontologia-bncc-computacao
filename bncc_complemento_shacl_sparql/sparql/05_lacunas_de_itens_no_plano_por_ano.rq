@@ -1,0 +1,16 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+
+# Exemplo: verificar, para o 8º ano, quais habilidades ainda não estão implementadas no plano.
+SELECT DISTINCT ?plano ?ano ?item ?codigo ?eixo ?texto
+WHERE {
+  VALUES (?plano ?ano) { (bc:PlanoExemploSegurancaEF8 bc:Ano8EF) }
+
+  ?item a bc:HabilidadeFundamental ;
+        bc:dirigidoA ?ano ;
+        bc:codigoBNCC ?codigo ;
+        bc:textoNormativo ?texto .
+  OPTIONAL { ?item bc:associadoAEixo ?eixo }
+
+  FILTER NOT EXISTS { ?plano bc:implementaItem ?item }
+}
+ORDER BY ?codigo

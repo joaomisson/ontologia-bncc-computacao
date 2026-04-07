@@ -1,0 +1,20 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+
+# Resume quantos itens implementados e quantos conceitos cobertos existem por eixo.
+SELECT ?plano ?eixo
+       (COUNT(DISTINCT ?item) AS ?qtdItens)
+       (COUNT(DISTINCT ?conceito) AS ?qtdConceitos)
+WHERE {
+  VALUES ?plano { bc:PlanoExemploSegurancaEF8 }
+  ?plano bc:implementaItem ?item .
+  ?item bc:associadoAEixo ?eixo .
+  {
+    ?item bc:abordaConceito ?conceito .
+  }
+  UNION
+  {
+    ?item bc:temObjetoConhecimento/bc:representaConceito ?conceito .
+  }
+}
+GROUP BY ?plano ?eixo
+ORDER BY ?eixo

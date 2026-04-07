@@ -1,0 +1,29 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# Retorna conceitos pré-requisito requeridos pelas habilidades implementadas, mas ainda não cobertos pelo plano.
+SELECT DISTINCT ?plano ?item ?codigo ?conceitoAlvo ?labelConceitoAlvo ?conceitoPrerequisito ?labelConceitoPrerequisito
+WHERE {
+  VALUES ?plano { bc:PlanoExemploSegurancaEF8 }
+
+  ?plano bc:implementaItem ?item .
+  OPTIONAL { ?item bc:codigoBNCC ?codigo }
+
+  {
+    ?item bc:abordaConceito ?conceitoAlvo .
+  }
+  UNION
+  {
+    ?item bc:temObjetoConhecimento/bc:representaConceito ?conceitoAlvo .
+  }
+
+  ?conceitoAlvo bc:requerConceito+ ?conceitoPrerequisito .
+
+  OPTIONAL { ?conceitoAlvo rdfs:label ?labelConceitoAlvo }
+  OPTIONAL { ?conceitoPrerequisito rdfs:label ?labelConceitoPrerequisito }
+
+  FILTER NOT EXISTS {
+    ?plano bc:cobreConceito/(bc:temSubconceito*) ?conceitoPrerequisito .
+  }
+}
+ORDER BY ?codigo ?labelConceitoPrerequisito ?conceitoPrerequisito

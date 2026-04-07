@@ -1,0 +1,61 @@
+PREFIX bc: <https://w3id.org/bncc/comp#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# Detecta itens implementados cujo pré-requisito explícito ou implícito ainda não foi implementado no plano.
+SELECT DISTINCT ?plano ?item ?codigo ?tipoFalta ?faltando ?codigoFaltando
+WHERE {
+  VALUES ?plano { bc:PlanoExemploSegurancaEF8 }
+  ?plano bc:implementaItem ?item .
+  OPTIONAL { ?item bc:codigoBNCC ?codigo }
+
+  {
+    ?item bc:temPrerequisitoExplicito ?faltando .
+    OPTIONAL { ?faltando bc:codigoBNCC ?codigoFaltando }
+    BIND("pré-requisito explícito"@pt-BR AS ?tipoFalta)
+  }
+  UNION
+  {
+    ?item bc:codigoBNCC ?codigo .
+    {
+      ?item bc:abordaConceito ?conceitoAlvo .
+    }
+    UNION
+    {
+      ?item bc:temObjetoConhecimento/bc:representaConceito ?conceitoAlvo .
+    }
+
+    ?conceitoAlvo bc:requerConceito+ ?conceitoBase .
+
+    ?faltando bc:codigoBNCC ?codigoFaltando .
+    {
+      ?faltando bc:abordaConceito ?conceitoBase .
+    }
+    UNION
+    {
+      ?faltando bc:temObjetoConhecimento/bc:representaConceito ?conceitoBase .
+    }
+
+    FILTER(?item != ?faltando)
+
+    BIND(
+      IF(STRSTARTS(STR(?codigo), "EI"), 0,
+        IF(STRSTARTS(STR(?codigo), "EF"), xsd:integer(SUBSTR(STR(?codigo), 3, 2)),
+          IF(STRSTARTS(STR(?codigo), "EM"), 100, 999)
+        )
+      ) AS ?ordItem
+    )
+    BIND(
+      IF(STRSTARTS(STR(?codigoFaltando), "EI"), 0,
+        IF(STRSTARTS(STR(?codigoFaltando), "EF"), xsd:integer(SUBSTR(STR(?codigoFaltando), 3, 2)),
+          IF(STRSTARTS(STR(?codigoFaltando), "EM"), 100, 999)
+        )
+      ) AS ?ordFaltando
+    )
+
+    FILTER(?ordFaltando < ?ordItem || EXISTS { ?faltando bc:precedeCurricularmente+ ?item })
+    BIND("pré-requisito implícito"@pt-BR AS ?tipoFalta)
+  }
+
+  FILTER NOT EXISTS { ?plano bc:implementaItem ?faltando }
+}
+ORDER BY ?codigo ?tipoFalta ?codigoFaltando
