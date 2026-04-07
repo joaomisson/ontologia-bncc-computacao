@@ -80,11 +80,7 @@ Use:
 - `bncc_complemento_shacl_sparql/sparql/` para análises gerais;
 - `bncc_pacote_ci_parametrizado/sparql_parametrizadas/` para análises parametrizadas e automação.
 
-## Organização recomendada
-
-A estrutura atual já funciona, mas pode ficar mais clara com uma organização por finalidade.
-
-### Estrutura sugerida
+## Organização
 
 ```text
 .
