@@ -12,24 +12,6 @@ Este projeto organiza uma base formal para representar os objetos curriculares d
 - uso de **SHACL** para validação estrutural e qualidade dos dados;
 - uso de **SPARQL** para consultas analíticas e apoio a sistemas curriculares inteligentes.
 
-## Estrutura atual do repositório
-
-```text
-.
-├── BNCCComputaoCompletodiagramado (1).pdf
-├── LICENSE
-├── ontologia_bncc_computacao_inicial.ttl
-├── bncc_complemento_shacl_sparql/
-│   ├── README.md
-│   ├── bncc_computacao_shapes.ttl
-│   └── sparql/
-└── bncc_pacote_ci_parametrizado/
-    ├── README.md
-    ├── bncc_computacao_shapes_ci.ttl
-    ├── sparql_parametrizadas/
-    └── ci/
-```
-
 ## Conteúdo principal
 
 ### `ontologia_bncc_computacao_inicial.ttl`
