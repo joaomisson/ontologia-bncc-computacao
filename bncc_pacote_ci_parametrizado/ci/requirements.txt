@@ -1,2 +1,0 @@
-pyshacl>=0.27,<1
-rdflib>=7,<8
