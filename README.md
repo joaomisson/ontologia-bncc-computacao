@@ -85,55 +85,6 @@ Use:
 ```text
 .
 ├── docs/
-│   └── BNCC_Computacao_oficial.pdf
-├── ontology/
-│   ├── core/
-│   │   └── ontologia_bncc_computacao.ttl
-│   ├── shapes/
-│   │   ├── bncc_computacao_shapes.ttl
-│   │   └── bncc_computacao_shapes_ci.ttl
-│   └── examples/
-│       └── planos_curriculares_exemplo.ttl
-├── queries/
-│   ├── diagnostico/
-│   ├── progressao/
-│   ├── prerequisitos/
-│   ├── cobertura/
-│   └── parametrizadas/
-├── ci/
-│   ├── run_shacl_ci.sh
-│   └── github-actions-example.yml
-├── packages/
-│   ├── bncc_complemento_shacl_sparql/
-│   └── bncc_pacote_ci_parametrizado/
-├── README.md
-└── LICENSE
-```
-
-### Benefícios dessa reorganização
-
-- separa claramente **ontologia**, **consultas**, **validação**, **documentação** e **automação**;
-- reduz duplicação de arquivos em diretórios “pacote”;
-- facilita manutenção e navegação por quem chega ao projeto;
-- melhora integração com pipelines, versionamento e futura publicação.
-
-## Recomendações práticas de reorganização
-
-### Mínimo recomendado
-Se quiser reorganizar sem mudar muito, eu sugiro:
-
-1. renomear o PDF para algo sem espaços nem parênteses;
-2. mover a ontologia principal para uma pasta `ontology/`;
-3. criar uma pasta `queries/` na raiz;
-4. criar uma pasta `shapes/` na raiz;
-5. criar uma pasta `ci/` na raiz;
-6. manter os diretórios atuais apenas como “pacotes distribuíveis” ou removê-los depois da consolidação.
-
-### Exemplo de reorganização incremental
-
-```text
-.
-├── docs/
 │   └── bncc_computacao_oficial.pdf
 ├── ontology/
 │   └── ontologia_bncc_computacao_inicial.ttl
@@ -152,18 +103,6 @@ Se quiser reorganizar sem mudar muito, eu sugiro:
 ├── README.md
 └── LICENSE
 ```
-
-## Próximos passos recomendados
-
-- consolidar arquivos duplicados em uma estrutura única;
-- padronizar nomes de arquivos e diretórios em minúsculas e sem espaços;
-- adicionar exemplos de execução com Apache Jena, pySHACL ou RDF4J;
-- criar uma pasta `examples/` com grafos de teste;
-- criar releases versionadas para ontologia, shapes e queries.
-
-## Licença
-
-Este repositório está distribuído sob os termos definidos em `LICENSE`.
 
 ## Contribuição
 
